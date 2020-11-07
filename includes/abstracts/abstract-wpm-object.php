@@ -121,6 +121,27 @@ abstract class WPM_Object {
 	}
 
 	/**
+	 * Save meta by meta_id with translations (since WP 5.0.0)
+	 *
+	 * @param $check Probably null
+	 * @param $meta_id The meta_id that is being updated
+	 * @param $meta_value The value to write
+	 * @param $meta_key The meta_key that is being updated
+	 *
+	 * @return bool|null Returning a non-null value will short-circuit the WP update function
+	 */
+	public function update_meta_field_by_mid( $check, $meta_id, $meta_value, $meta_key ) {
+		$meta = get_metadata_by_mid( $this->object_type, $meta_id );
+		if ( $meta ) {
+			$column = sanitize_key( $this->object_type . '_id' );
+			$original_key = $meta->meta_key;
+			$object_id    = $meta->{$column};
+			return $this->update_meta_field( $check, $object_id, $meta_key, $meta_value, null );
+		}
+		return $check;
+	}
+
+	/**
 	 * Save meta with translations
 	 *
 	 * @param $check
